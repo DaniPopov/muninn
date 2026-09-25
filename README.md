@@ -53,7 +53,7 @@ You:     where's my passport?
 Muninn:  You told me on Sept 3 that you put it in the top drawer of the desk.
 
 You:     remind me Tuesday at 10 to call the doctor
-Muninn:  Okay, I'll remind you Tuesday, Sept 30 at 10:00.
+Muninn:  Okay, I'll remind you Tuesday, Sept 29 at 10:00.
 
 ... Tuesday, 10:00 ...
 
@@ -92,6 +92,7 @@ Muninn:  Reminder: call the doctor.
 React + TypeScript + Tailwind dashboard organized by feature, Docker Compose to run it.
 
 - [Backend architecture](docs/architecture/backend.md)
+- [Agent architecture](docs/architecture/agent.md)
 - [Dashboard architecture](docs/architecture/dashboard.md)
 - [Architecture Decision Records](docs/architecture_decisions/): what we decided and why.
   Still open: WhatsApp integration, speech-to-text engine, storage and encryption.

@@ -88,7 +88,7 @@ apps/backend/
     │
     ├── services/
     │   ├── exceptions.py        # NotFoundError, ConflictError, UnavailableError, ...
-    │   ├── agent/
+    │   ├── agent/               # details: agent.md
     │   │   ├── harness.py       # the agent loop: model → tools → model, step limit, timeout
     │   │   ├── tools.py         # tool definitions; each calls a feature service
     │   │   └── prompts/         # system prompts as files
