@@ -1,4 +1,6 @@
-# Muninn
+<p align="center">
+  <img src="docs/assets/readme-banner.png" alt="Muninn: a WhatsApp agent that remembers for you" width="100%">
+</p>
 
 > *In Norse myth, Odin had two ravens. Huginn was "thought". Muninn was "memory".
 > Every day they flew around the world and came back to tell him what they had seen.*
@@ -16,6 +18,8 @@ Everything is stored on **your own server**, encrypted.
 ---
 
 ## Why this exists
+
+<img src="docs/assets/muninn-mascot.png" alt="Muninn mascot" width="140" align="right">
 
 Most "second brain" apps are built for people who already live in apps. They need
 another login, another interface, another thing to learn.
@@ -104,6 +108,7 @@ muninn/
 │   └── assets/             # images for the README and docs
 ├── docker-compose.yml      # STAGE / PROD
 ├── docker-compose.dev.yml  # DEV override (hot reload)
+├── Makefile                # make dev-up, make dev-down, ... (run `make` for all)
 └── .env.example            # copy to .env
 ```
 
@@ -122,14 +127,16 @@ muninn/
 There's no application code yet, so there's nothing to run. The setup will look like this:
 
 ```bash
-cp .env.example .env        # set APP_ENV=DEV | STAGE | PROD
+make env        # creates .env from .env.example, then set APP_ENV=DEV | STAGE | PROD
 
-# DEV: hot reload. backend on :8000 (/docs), dashboard on :5173
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+make dev-up     # DEV: hot reload. Backend on :8000 (/docs), dashboard on :5173
+make dev-logs   # follow the logs
+make dev-down   # stop
 
-# STAGE / PROD: production build, app on :80
-docker compose up -d --build
+make prod-up    # STAGE / PROD: production build, app on :80
 ```
+
+Run `make` to see every command.
 
 Star or watch the repo to follow along.
 
