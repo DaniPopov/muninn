@@ -12,7 +12,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 # ---- runtime: slim image, no uv, not root -------------------------------------
-FROM python:3.12-slim-bookworm
+FROM python:3.14-slim-bookworm
 WORKDIR /app
 RUN useradd --create-home --uid 1000 muninn \
     && mkdir -p /app/data && chown muninn:muninn /app/data
