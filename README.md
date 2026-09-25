@@ -29,7 +29,7 @@ Many of them would rather hold the mic button and talk than type.
 
 Muninn was built with one user in mind: **a dad** who wants to say
 *"I parked on floor 3"* into his phone and, two hours later, ask *"where did I park?"*
-and get an answer. No new app, no typing, no cloud company reading his messages.
+and get an answer. No new app, no typing, and his data stored on his own server.
 
 ## What it does
 
@@ -39,7 +39,7 @@ and get an answer. No new app, no typing, no cloud company reading his messages.
 | **Finds them when you ask** | *"Where did I put the passport?"* · *"How much does Guy owe me?"* |
 | **Reminds you on time** | *"Remind me on Tuesday at 10 to call the doctor"* |
 | **Understands voice notes** | Speech-to-text in **Hebrew** and **Russian** (and English), because many people prefer talking to typing |
-| **Keeps your data yours** | Runs on your own server. Data is encrypted at rest. No third-party database. |
+| **Keeps your data yours** | Runs on your own server. Data is encrypted at rest. No third-party database. Use a local model and nothing leaves your server at all. |
 
 ### An example conversation
 
@@ -66,7 +66,9 @@ Muninn:  Reminder: call the doctor.
    doesn't work well in Hebrew and Russian, the product doesn't work.
 2. **Zero learning curve.** No commands, no menus, no special syntax. Just talk.
 3. **Your server, your data.** Self-hosted by design. Encrypted at rest. Easy to
-   export and easy to delete.
+   export and easy to delete. Be aware: with a hosted LLM (OpenAI, Claude), the text of
+   each conversation is sent to that provider to be processed. With a local model
+   (Ollama, vLLM), nothing leaves your server. See [ADR 0007](docs/architecture_decisions/0007-llm-providers.md).
 4. **Boring to run.** One `docker compose up` on a small VPS or a home machine should
    be enough. No Kubernetes, no pile of managed services.
 5. **Honest about what it knows.** If it doesn't remember something, it says so.

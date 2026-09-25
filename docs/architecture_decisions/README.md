@@ -26,12 +26,12 @@ when someone asks "why didn't you just use X?", the answer should be here.
 | [0004](0004-frontend-feature-based-structure.md) | Frontend: organize code by feature | Accepted |
 | [0005](0005-monorepo-apps-layout.md) | Monorepo layout: `apps/backend` and `apps/dashboard` | Accepted |
 | [0006](0006-own-agent-harness.md) | Agent harness: build our own, then evolve it | Accepted |
+| [0007](0007-llm-providers.md) | LLM providers: OpenAI first, then Claude, then local models | Accepted |
 
 ## Coming next
 
 - How we connect to WhatsApp (official Cloud API vs a self-hosted bridge)
 - Speech-to-text engine for Hebrew and Russian (local Whisper / ivrit.ai vs hosted API)
 - Storage and encryption at rest (SQLite + SQLCipher? Postgres + app-level encryption?)
-- Default LLM provider, and how it fits the privacy promise
 - How memories are recalled (all in the prompt vs embeddings)
 - Reminder scheduler and timezone handling
