@@ -56,7 +56,10 @@ Dependency rule as everywhere ([backend.md](backend.md)): the harness knows the
 
 ## Domain types
 
-Our own types, so every provider maps to the same shapes:
+Our own types, so every provider maps to the same shapes. They check their own rules:
+a tool call can only be on an assistant message, a tool message must name the call it
+answers, tool names use the format both OpenAI and Anthropic accept. Build messages
+with `Message.system/user/assistant/tool_result(...)` rather than by hand.
 
 ```python
 class Role(StrEnum):
@@ -100,6 +103,11 @@ class ModelResponse:
 
 ```python
 class LanguageModel(ABC):
+    @property
+    @abstractmethod
+    def model_name(self) -> str:
+        """The model's name as the provider calls it. Used in logs."""
+
     @abstractmethod
     async def complete(
         self, messages: Sequence[Message], tools: Sequence[ToolDefinition]
