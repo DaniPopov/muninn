@@ -28,5 +28,10 @@ updates:
       interval: weekly
     commit-message:
       prefix: "chore(deps)"
+    # Python version upgrades (3.12 -> 3.13) are done by hand in one change: pyproject,
+    # both Dockerfile stages and CI together. Dependabot would bump only one stage.
+    ignore:
+      - dependency-name: python
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
 
   # Add npm for apps/dashboard when it has a package.json.
