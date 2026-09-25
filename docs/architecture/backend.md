@@ -200,6 +200,17 @@ with no network.
 - The composition root. Reads `Settings`, picks the adapters, builds the services,
   and owns adapter lifecycle (open DB, load the Whisper model once, close on shutdown).
 
+### No globals
+- There is no global `settings` and no global `app`. Uvicorn starts the app with
+  `uvicorn app.main:create_app --factory`, and tests call `create_app(settings)`.
+- Clients (database engine, HTTP clients, the Whisper model) are created once in
+  `bootstrap.py`, stored on the `Container`, and passed into services through their
+  constructors. Routers get services through `api/deps.py`.
+- Why: every dependency is visible in a constructor signature, nothing runs at
+  import time, and a test can swap any piece without monkeypatching a module.
+- File locations never come from counting folder levels. The root `.env` is found by
+  looking for `.env.example`; anything else (like where data is stored) is a setting.
+
 ## Configuration and environments
 
 One `.env` file at the repo root, read by both the backend (pydantic-settings) and

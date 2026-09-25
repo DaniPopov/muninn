@@ -14,7 +14,7 @@ BACKEND      := apps/backend
 .PHONY: help env \
         dev-up dev-down dev-restart dev-build dev-logs dev-ps \
         prod-up prod-down prod-restart prod-build prod-logs prod-ps \
-        sync hooks precommit lint fmt typecheck test check \
+        sync run hooks precommit lint fmt typecheck test check \
         backend-shell dashboard-shell config clean
 
 help: ## Show this help
@@ -66,6 +66,9 @@ prod-ps: ## Show STAGE/PROD containers
 sync: ## Install backend dependencies (uv)
 	cd $(BACKEND) && uv sync
 
+run: ## Run the backend locally without Docker, with hot reload (http://localhost:8000/docs)
+	cd $(BACKEND) && uv run uvicorn app.main:create_app --factory --reload --port $${BACKEND_PORT:-8000}
+
 hooks: ## Install the git hooks (once per clone): checks run on every commit
 	uvx pre-commit install
 
@@ -81,9 +84,8 @@ fmt: ## Backend: ruff format (rewrites files)
 typecheck: ## Backend: mypy --strict
 	cd $(BACKEND) && uv run mypy app
 
-# pytest exits with 5 when there are no tests yet; treat that as a pass until the first test exists.
 test: ## Backend: pytest
-	cd $(BACKEND) && { uv run pytest -q; rc=$$?; [ $$rc -eq 0 ] || [ $$rc -eq 5 ]; }
+	cd $(BACKEND) && uv run pytest -q
 
 check: precommit test ## Everything CI runs: all pre-commit checks + tests
 
