@@ -41,9 +41,19 @@ From then on, every `git commit` runs these checks automatically
 | `uv.lock` matches `pyproject.toml` | uv |
 | Commit message format | conventional-pre-commit |
 
-Run everything by hand with `make check` (all checks + tests). GitHub Actions runs
-the same checks on every push and pull request, so skipping hooks with
+Run everything by hand with `make check` (all checks + tests). Skipping hooks with
 `--no-verify` only moves the failure to CI.
+
+## CI (GitHub Actions)
+
+| Workflow | Runs on | What it checks |
+|---|---|---|
+| [`checks`](.github/workflows/checks.yml) | every push and PR | the pre-commit hooks above, on all files |
+| [`backend`](.github/workflows/backend.yml) | changes under `apps/backend/` | tests with coverage (`make coverage`); builds the Docker image and checks `/health` in PROD mode |
+| [`security`](.github/workflows/security.yml) | every push and PR, and weekly | secrets in the full git history (gitleaks), known-vulnerable dependencies (`make audit`), CodeQL, dependency review on PRs |
+
+[Dependabot](.github/dependabot.yml) opens weekly PRs to update Python packages,
+GitHub Actions and Docker base images.
 
 If a check fails because it **fixed** something (formatting, whitespace), just
 `git add` the changes and commit again.

@@ -1,0 +1,32 @@
+# Weekly PRs that update dependencies. Minor and patch updates are grouped into one PR
+# per ecosystem so they don't flood the repo; major updates get their own PR.
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /apps/backend
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      python-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci(deps)"
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: docker
+    directory: /apps/backend
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Add npm for apps/dashboard when it has a package.json.

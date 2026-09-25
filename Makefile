@@ -14,7 +14,7 @@ BACKEND      := apps/backend
 .PHONY: help env \
         dev-up dev-down dev-restart dev-build dev-logs dev-ps \
         prod-up prod-down prod-restart prod-build prod-logs prod-ps \
-        sync run hooks precommit lint fmt typecheck test check \
+        sync run hooks precommit lint fmt typecheck test coverage audit check \
         backend-shell dashboard-shell config clean
 
 help: ## Show this help
@@ -86,6 +86,14 @@ typecheck: ## Backend: mypy --strict
 
 test: ## Backend: pytest
 	cd $(BACKEND) && uv run pytest -q
+
+coverage: ## Backend: pytest with a coverage report (lines not covered are listed)
+	cd $(BACKEND) && uv run pytest -q --cov=app --cov-report=term-missing
+
+audit: ## Backend: check dependencies against known vulnerabilities (pip-audit)
+	@req=$$(mktemp) && trap 'rm -f "$$req"' EXIT \
+		&& cd $(BACKEND) && uv export --frozen --no-emit-project -q -o "$$req" \
+		&& uvx pip-audit --disable-pip -r "$$req"
 
 check: precommit test ## Everything CI runs: all pre-commit checks + tests
 

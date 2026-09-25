@@ -1,4 +1,4 @@
-# The same checks as the local git hooks, on every push and pull request.
+# Repo-wide checks: the same pre-commit hooks that run on every local commit.
 # Local hooks can be skipped with --no-verify; this can't.
 name: checks
 
@@ -10,23 +10,23 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  checks:
+  pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0   # gitleaks scans the full history
+      - uses: actions/checkout@v5
 
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
 
+      # The mypy hook runs inside the backend's environment.
       - name: Install backend dependencies
         run: make sync
 
-      - name: Pre-commit checks (secrets, hygiene, lint, format, types)
+      - name: Pre-commit (hygiene, lint, format, types, lock file)
         run: make precommit
-
-      - name: Tests
-        run: make test
