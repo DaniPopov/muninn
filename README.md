@@ -9,7 +9,7 @@ You talk to it like you'd talk to a person: type a message or just send a voice 
 It saves what you tell it, finds it again when you ask, and reminds you at the right time.
 Everything is stored on **your own server**, encrypted.
 
-> ⚠️ **Status: early design phase.** There's no working code yet. We're writing down
+> **Status: early design phase.** There's no working code yet. We're writing down
 > what we're building and why before we build it. See [Roadmap](#roadmap) and
 > [`docs/architecture_decisions/`](docs/architecture_decisions/).
 
@@ -31,17 +31,17 @@ and get an answer. No new app, no typing, no cloud company reading his messages.
 
 | | Example |
 |---|---|
-| 🧠 **Remembers things for you** | *"I parked on floor 3"* · *"I lent Guy 200 shekels"* |
-| 🔍 **Finds them when you ask** | *"Where did I put the passport?"* · *"How much does Guy owe me?"* |
-| ⏰ **Reminds you on time** | *"Remind me on Tuesday at 10 to call the doctor"* |
-| 🎙️ **Understands voice notes** | Speech-to-text in **Hebrew** and **Russian** (and English), because many people prefer talking to typing |
-| 🔒 **Keeps your data yours** | Runs on your own server. Data is encrypted at rest. No third-party database. |
+| **Remembers things for you** | *"I parked on floor 3"* · *"I lent Guy 200 shekels"* |
+| **Finds them when you ask** | *"Where did I put the passport?"* · *"How much does Guy owe me?"* |
+| **Reminds you on time** | *"Remind me on Tuesday at 10 to call the doctor"* |
+| **Understands voice notes** | Speech-to-text in **Hebrew** and **Russian** (and English), because many people prefer talking to typing |
+| **Keeps your data yours** | Runs on your own server. Data is encrypted at rest. No third-party database. |
 
 ### An example conversation
 
 ```
-You:     🎙️ (voice) "I put the passport in the top drawer of the desk"
-Muninn:  Got it, passport → top drawer of the desk. ✅
+You:     (voice note) "I put the passport in the top drawer of the desk"
+Muninn:  Got it, passport → top drawer of the desk.
 
 ... three weeks later ...
 
@@ -49,11 +49,11 @@ You:     where's my passport?
 Muninn:  You told me on Sept 3 that you put it in the top drawer of the desk.
 
 You:     remind me Tuesday at 10 to call the doctor
-Muninn:  Okay, I'll remind you Tuesday, Sept 30 at 10:00. ⏰
+Muninn:  Okay, I'll remind you Tuesday, Sept 30 at 10:00.
 
 ... Tuesday, 10:00 ...
 
-Muninn:  ⏰ Reminder: call the doctor.
+Muninn:  Reminder: call the doctor.
 ```
 
 ## Design principles
@@ -82,14 +82,18 @@ Muninn:  ⏰ Reminder: call the doctor.
                             └── Scheduler ──► sends the reminder back on WhatsApp at the right time
 ```
 
-The big technical choices (language, WhatsApp integration, speech-to-text engine,
-storage and encryption) are written down as **Architecture Decision Records (ADRs)** in
-[`docs/architecture_decisions/`](docs/architecture_decisions/). Some are still open.
-If you have an opinion, open an issue or join the discussion.
+**Stack:** Python (FastAPI) backend in four layers (api / services / domain / adapters),
+React + TypeScript + Tailwind frontend organized by feature, Docker Compose to run it.
+
+- [Backend architecture](docs/architecture/backend.md)
+- [Frontend architecture](docs/architecture/frontend.md)
+- [Architecture Decision Records](docs/architecture_decisions/): what we decided and why.
+  Still open: WhatsApp integration, speech-to-text engine, storage and encryption.
+  If you have an opinion, open an issue.
 
 ## Roadmap
 
-- [ ] **Phase 0: Design.** README, ADRs for stack / WhatsApp / STT / storage *(we are here)*
+- [ ] **Phase 0: Design.** README, stack, backend and frontend architecture, open ADRs for WhatsApp / STT / storage *(we are here)*
 - [ ] **Phase 1: Text MVP.** Receive WhatsApp text, save memories, answer questions
 - [ ] **Phase 2: Voice.** Hebrew and Russian voice notes via speech-to-text
 - [ ] **Phase 3: Reminders.** Natural-language scheduling, timezone-aware delivery
@@ -99,7 +103,19 @@ If you have an opinion, open an issue or join the discussion.
 
 ## Getting started
 
-Not yet. There's nothing to run. ⭐ Star or watch the repo to follow along.
+There's no application code yet, so there's nothing to run. The setup will look like this:
+
+```bash
+cp .env.example .env        # set APP_ENV=DEV | STAGE | PROD
+
+# DEV: hot reload. Backend on :8000 (/docs), frontend on :5173
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+# STAGE / PROD: production build, app on :80
+docker compose up -d --build
+```
+
+Star or watch the repo to follow along.
 
 ## Contributing
 
@@ -109,7 +125,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 Particularly useful right now:
 - Experience with **Hebrew or Russian speech-to-text** (Whisper, ivrit.ai, etc.)
 - Experience with the **WhatsApp Cloud API** or self-hosted WhatsApp bridges
-- Feedback on the ADRs in [`docs/architecture_decisions/`](docs/architecture_decisions/)
+- Feedback on the architecture docs and ADRs in [`docs/architecture_decisions/`](docs/architecture_decisions/)
 
 ## Security
 

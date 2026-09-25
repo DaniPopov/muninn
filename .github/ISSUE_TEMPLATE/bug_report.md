@@ -17,5 +17,5 @@ labels: bug
 - How you run it (Docker, local, VPS):
 - Language of the message (Hebrew / Russian / English / other):
 
-> ⚠️ Don't paste real personal messages or voice notes. Use made-up examples.
+> **Note:** Don't paste real personal messages or voice notes. Use made-up examples.
 > Security issue? Don't open an issue. See SECURITY.md.

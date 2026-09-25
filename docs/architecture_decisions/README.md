@@ -21,11 +21,13 @@ when someone asks "why didn't you just use X?", the answer should be here.
 | # | Title | Status |
 |---|---|---|
 | [0001](0001-record-architecture-decisions.md) | Record architecture decisions | Accepted |
-| [0002](0002-language-and-stack.md) | Language and stack: Python backend or full TypeScript | **Proposed** |
-| [0003](0003-whatsapp-integration.md) | How we connect to WhatsApp | **Proposed** |
+| [0002](0002-language-and-stack.md) | Language and stack: Python backend, React + TypeScript frontend | Accepted |
+| [0003](0003-backend-four-layer-architecture.md) | Backend: four layers (api / services / domain / adapters) | Accepted |
+| [0004](0004-frontend-feature-based-structure.md) | Frontend: organize code by feature | Accepted |
 
 ## Coming next
 
+- How we connect to WhatsApp (official Cloud API vs a self-hosted bridge)
 - Speech-to-text engine for Hebrew and Russian (local Whisper / ivrit.ai vs hosted API)
 - Storage and encryption at rest (SQLite + SQLCipher? Postgres + app-level encryption?)
 - LLM provider and how memories are retrieved (plain search vs embeddings)

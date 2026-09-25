@@ -1,0 +1,32 @@
+# Muninn stack. Configuration comes from the root .env (copy .env.example).
+#
+#   STAGE / PROD:  docker compose up -d --build
+#   DEV:           docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# This file is the production-like base. docker-compose.dev.yml adds hot reload on top.
+name: muninn
+
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - path: ./.env
+        required: false
+    environment:
+      APP_ENV: ${APP_ENV:-DEV}
+    volumes:
+      - muninn-data:/app/data   # memories, reminders, models: survives restarts
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "${FRONTEND_PORT:-80}:80"   # nginx serves the app and proxies /api to backend
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  muninn-data:

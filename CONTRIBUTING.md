@@ -1,6 +1,6 @@
 # Contributing to Muninn
 
-Thanks for wanting to help! 🐦‍⬛ Muninn is in its **design phase**, so right now the
+Thanks for wanting to help! Muninn is in its **design phase**, so right now the
 most valuable contributions are ideas, feedback and research, not code.
 
 ## Ways to help
