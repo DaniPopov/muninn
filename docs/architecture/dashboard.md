@@ -1,6 +1,6 @@
-# Frontend Architecture
+# Dashboard Architecture
 
-Status: **design**. There's no code yet; this document is the plan the code will follow.
+Code: [`apps/dashboard/`](../../apps/dashboard). Status: **design**. There's no code yet; this document is the plan the code will follow.
 Decisions: [ADR 0002](../architecture_decisions/0002-language-and-stack.md) (React + TypeScript + Tailwind),
 [ADR 0004](../architecture_decisions/0004-frontend-feature-based-structure.md) (organized by feature).
 
@@ -30,7 +30,7 @@ Non-goals, written down so we don't drift:
 ## Layout
 
 ```
-frontend/
+apps/dashboard/
 ├── index.html
 ├── vite.config.ts               # @ alias, Tailwind plugin, /api proxy
 ├── Dockerfile                   # build stage (node + pnpm) → nginx serving dist/
@@ -128,8 +128,8 @@ Take `features/reminders/` as the example:
 
 | Where | What goes there | How it's used |
 |---|---|---|
-| `frontend/src/assets/` | images used inside the app (logo, illustrations, empty-state art) | `import logo from "@/assets/logo.svg"`, bundled and cache-busted by Vite |
-| `frontend/public/` | files that need a fixed URL (favicon, `robots.txt`, social preview image) | referenced by absolute path: `/favicon.svg` |
+| `apps/dashboard/src/assets/` | images used inside the app (logo, illustrations, empty-state art) | `import logo from "@/assets/logo.svg"`, bundled and cache-busted by Vite |
+| `apps/dashboard/public/` | files that need a fixed URL (favicon, `robots.txt`, social preview image) | referenced by absolute path: `/favicon.svg` |
 | `docs/assets/` | images for the README and docs (logo, diagrams, screenshots) | Markdown: `![Muninn](docs/assets/logo.png)` |
 
 Prefer SVG for logos and icons. Compress PNG/JPG before committing.
@@ -144,7 +144,7 @@ Prefer SVG for logos and icons. Compress PNG/JPG before committing.
 
 ## Running
 
-| `APP_ENV` | How the frontend runs |
+| `APP_ENV` | How the dashboard runs |
 |---|---|
 | `DEV` | Vite dev server with hot reload on `:5173`, proxies `/api` to the backend |
 | `STAGE` / `PROD` | nginx serves the built `dist/` on `:80` and proxies `/api` to the backend container |

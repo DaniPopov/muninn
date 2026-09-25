@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-09-24
 - **Deciders:** @DaniPopov
+- **Note:** the folder layout below is replaced by [ADR 0005](0005-monorepo-apps-layout.md) (`apps/backend`, `apps/dashboard`)
 
 ## Context
 

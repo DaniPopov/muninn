@@ -9,7 +9,7 @@ name: muninn
 services:
   backend:
     build:
-      context: ./backend
+      context: ./apps/backend
     env_file:
       - path: ./.env
         required: false
@@ -19,11 +19,11 @@ services:
       - muninn-data:/app/data   # memories, reminders, models: survives restarts
     restart: unless-stopped
 
-  frontend:
+  dashboard:
     build:
-      context: ./frontend
+      context: ./apps/dashboard
     ports:
-      - "${FRONTEND_PORT:-80}:80"   # nginx serves the app and proxies /api to backend
+      - "${DASHBOARD_PORT:-80}:80"   # nginx serves the app and proxies /api to backend
     depends_on:
       - backend
     restart: unless-stopped

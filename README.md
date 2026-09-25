@@ -83,17 +83,33 @@ Muninn:  Reminder: call the doctor.
 ```
 
 **Stack:** Python (FastAPI) backend in four layers (api / services / domain / adapters),
-React + TypeScript + Tailwind frontend organized by feature, Docker Compose to run it.
+React + TypeScript + Tailwind dashboard organized by feature, Docker Compose to run it.
 
 - [Backend architecture](docs/architecture/backend.md)
-- [Frontend architecture](docs/architecture/frontend.md)
+- [Dashboard architecture](docs/architecture/dashboard.md)
 - [Architecture Decision Records](docs/architecture_decisions/): what we decided and why.
   Still open: WhatsApp integration, speech-to-text engine, storage and encryption.
   If you have an opinion, open an issue.
 
+## Repository layout
+
+```
+muninn/
+├── apps/
+│   ├── backend/            # Python + FastAPI, four layers
+│   └── dashboard/          # React + TypeScript + Tailwind, organized by feature
+├── docs/
+│   ├── architecture/       # how the system looks now
+│   ├── architecture_decisions/   # ADRs: what we decided and why
+│   └── assets/             # images for the README and docs
+├── docker-compose.yml      # STAGE / PROD
+├── docker-compose.dev.yml  # DEV override (hot reload)
+└── .env.example            # copy to .env
+```
+
 ## Roadmap
 
-- [ ] **Phase 0: Design.** README, stack, backend and frontend architecture, open ADRs for WhatsApp / STT / storage *(we are here)*
+- [ ] **Phase 0: Design.** README, stack, backend and dashboard architecture, open ADRs for WhatsApp / STT / storage *(we are here)*
 - [ ] **Phase 1: Text MVP.** Receive WhatsApp text, save memories, answer questions
 - [ ] **Phase 2: Voice.** Hebrew and Russian voice notes via speech-to-text
 - [ ] **Phase 3: Reminders.** Natural-language scheduling, timezone-aware delivery
@@ -108,7 +124,7 @@ There's no application code yet, so there's nothing to run. The setup will look 
 ```bash
 cp .env.example .env        # set APP_ENV=DEV | STAGE | PROD
 
-# DEV: hot reload. Backend on :8000 (/docs), frontend on :5173
+# DEV: hot reload. backend on :8000 (/docs), dashboard on :5173
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 # STAGE / PROD: production build, app on :80

@@ -29,7 +29,7 @@ settings (export / delete all data). It will grow with the backend, one feature 
 **Option B.** Code is organized as `app/` (wiring), `features/<name>/` (features)
 and `shared/` (reusable, feature-agnostic code). Styling is **Tailwind CSS**.
 
-The full guide lives in [`docs/architecture/frontend.md`](../architecture/frontend.md).
+The full guide lives in [`docs/architecture/dashboard.md`](../architecture/dashboard.md).
 
 ## Consequences
 

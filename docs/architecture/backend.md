@@ -1,6 +1,6 @@
 # Backend Architecture
 
-Status: **design**. There's no code yet; this document is the plan the code will follow.
+Code: [`apps/backend/`](../../apps/backend). Status: **design**. There's no code yet; this document is the plan the code will follow.
 Decisions: [ADR 0002](../architecture_decisions/0002-language-and-stack.md) (Python + FastAPI),
 [ADR 0003](../architecture_decisions/0003-backend-four-layer-architecture.md) (four layers).
 
@@ -59,7 +59,7 @@ inward and provide it.
 ## Layout
 
 ```
-backend/
+apps/backend/
 ├── pyproject.toml               # uv, ruff, mypy --strict, pytest (asyncio auto)
 ├── Dockerfile                   # multi-stage: uv builder → slim non-root runtime
 └── app/
@@ -121,7 +121,7 @@ backend/
             ├── memories/        # CRUD for the dashboard
             └── reminders/       # list / cancel for the dashboard
 
-tests/                           # mirrors app/: domain/ services/ adapters/ api/
+tests/                           # mirrors app/ (apps/backend/tests/): domain/ services/ adapters/ api/
 ```
 
 ## Example: a voice note travels through the layers

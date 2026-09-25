@@ -6,22 +6,22 @@ services:
     environment:
       APP_ENV: DEV
     volumes:
-      - ./backend/app:/app/app
+      - ./apps/backend/app:/app/app
     ports:
       - "${BACKEND_PORT:-8000}:8000"
 
   # Stop at the Dockerfile's build stage (node + pnpm) and run Vite instead of nginx.
-  frontend:
+  dashboard:
     build:
       target: build
     command: ["pnpm", "dev", "--host", "0.0.0.0"]
     environment:
       VITE_API_PROXY: http://backend:8000
     volumes:
-      - ./frontend:/app
-      - frontend-node-modules:/app/node_modules
+      - ./apps/dashboard:/app
+      - dashboard-node-modules:/app/node_modules
     ports: !override   # replace the base's nginx port, don't add to it
-      - "${FRONTEND_DEV_PORT:-5173}:5173"
+      - "${DASHBOARD_DEV_PORT:-5173}:5173"
 
 volumes:
-  frontend-node-modules:
+  dashboard-node-modules:
