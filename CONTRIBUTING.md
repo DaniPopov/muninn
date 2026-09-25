@@ -21,6 +21,33 @@ most valuable contributions are ideas, feedback and research, not code.
 4. Fill in the pull request template.
 5. Be patient and kind in review. We're all volunteers.
 
+## Checks before every commit
+
+After cloning, install the git hooks once:
+
+```bash
+make hooks
+```
+
+From then on, every `git commit` runs these checks automatically
+(config: [`.pre-commit-config.yaml`](.pre-commit-config.yaml)):
+
+| Check | Tool |
+|---|---|
+| No secrets (API keys, tokens, private keys) | gitleaks, detect-private-key |
+| File hygiene (YAML/TOML/JSON valid, no huge files, no merge markers, trailing whitespace) | pre-commit-hooks |
+| Backend lint + format | ruff |
+| Backend types | mypy `--strict` |
+| `uv.lock` matches `pyproject.toml` | uv |
+| Commit message format | conventional-pre-commit |
+
+Run everything by hand with `make check` (all checks + tests). GitHub Actions runs
+the same checks on every push and pull request, so skipping hooks with
+`--no-verify` only moves the failure to CI.
+
+If a check fails because it **fixed** something (formatting, whitespace), just
+`git add` the changes and commit again.
+
 ## Commit messages
 
 We use [Conventional Commits](https://www.conventionalcommits.org/):

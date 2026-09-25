@@ -106,6 +106,7 @@ muninn/
 │   ├── architecture/       # how the system looks now
 │   ├── architecture_decisions/   # ADRs: what we decided and why
 │   └── assets/             # images for the README and docs
+├── scripts/                # repo-wide helper scripts (setup, backups, codegen)
 ├── docker-compose.yml      # STAGE / PROD
 ├── docker-compose.dev.yml  # DEV override (hot reload)
 ├── Makefile                # make dev-up, make dev-down, ... (run `make` for all)

@@ -121,6 +121,7 @@ apps/backend/
             ├── memories/        # CRUD for the dashboard
             └── reminders/       # list / cancel for the dashboard
 
+scripts/                         # backend-only scripts that import app/ (seed data, smoke tests)
 tests/                           # mirrors app/ (apps/backend/tests/): domain/ services/ adapters/ api/
 ```
 
@@ -204,7 +205,8 @@ with no network.
 One `.env` file at the repo root, read by both the backend (pydantic-settings) and
 Docker Compose. Copy `.env.example` to `.env` to start. `.env` is gitignored.
 
-`APP_ENV` says where the app is running:
+`APP_DOMAIN` is the public domain (for example `muninn.example.com`), used for the
+WhatsApp webhook URL, links and CORS. `APP_ENV` says where the app is running:
 
 | `APP_ENV` | Used for | Behavior |
 |---|---|---|

@@ -8,11 +8,13 @@
 COMPOSE      := docker compose
 COMPOSE_DEV  := $(COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml
 COMPOSE_PROD := $(COMPOSE) -f docker-compose.yml
+BACKEND      := apps/backend
 
 .DEFAULT_GOAL := help
 .PHONY: help env \
         dev-up dev-down dev-restart dev-build dev-logs dev-ps \
         prod-up prod-down prod-restart prod-build prod-logs prod-ps \
+        sync hooks precommit lint fmt typecheck test check \
         backend-shell dashboard-shell config clean
 
 help: ## Show this help
@@ -59,6 +61,31 @@ prod-logs: ## Follow STAGE/PROD logs (all services)
 
 prod-ps: ## Show STAGE/PROD containers
 	$(COMPOSE_PROD) ps
+
+# ---- Quality checks (run `make check` before pushing) -----------------------
+sync: ## Install backend dependencies (uv)
+	cd $(BACKEND) && uv sync
+
+hooks: ## Install the git hooks (once per clone): checks run on every commit
+	uvx pre-commit install
+
+precommit: ## Run every pre-commit check on every file: secrets, lint, format, types
+	uvx pre-commit run --all-files
+
+lint: ## Backend: ruff lint
+	cd $(BACKEND) && uv run ruff check .
+
+fmt: ## Backend: ruff format (rewrites files)
+	cd $(BACKEND) && uv run ruff format . && uv run ruff check --fix .
+
+typecheck: ## Backend: mypy --strict
+	cd $(BACKEND) && uv run mypy app
+
+# pytest exits with 5 when there are no tests yet; treat that as a pass until the first test exists.
+test: ## Backend: pytest
+	cd $(BACKEND) && { uv run pytest -q; rc=$$?; [ $$rc -eq 0 ] || [ $$rc -eq 5 ]; }
+
+check: precommit test ## Everything CI runs: all pre-commit checks + tests
 
 # ---- Tools -------------------------------------------------------------------
 backend-shell: ## Open a shell in the running backend container

@@ -1,0 +1,70 @@
+# Checks that run on every `git commit`. The same checks run in CI on every push/PR.
+#   make hooks        install the git hooks (once per clone)
+#   make precommit    run every check on every file
+# Skipping with `git commit --no-verify` only delays the failure to CI.
+
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
+
+repos:
+  # ---- Secrets: never let an API key or private key reach git history ---------
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+
+  # ---- General file hygiene ---------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-merge-conflict
+      - id: check-yaml
+        args: [--unsafe]   # syntax only: allows compose tags like !override
+      - id: check-toml
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # ---- Backend (Python): lint + format ----------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.9
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^apps/backend/
+      - id: ruff-format
+        files: ^apps/backend/
+
+  # ---- Backend: uv.lock must match pyproject.toml -----------------------------
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.12.19
+    hooks:
+      - id: uv-lock
+        args: [--project, apps/backend]
+        files: ^apps/backend/(pyproject\.toml|uv\.lock)$
+
+  # ---- Backend: types (uses the project's own environment) --------------------
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (backend, strict)
+        entry: uv run --project apps/backend mypy apps/backend/app
+        language: system
+        pass_filenames: false
+        files: ^apps/backend/.*\.py$
+
+  # ---- Dashboard (TypeScript): eslint + prettier + tsc -------------------------
+  # Added when apps/dashboard has code.
+
+  # ---- Commit messages: Conventional Commits (see CONTRIBUTING.md) -------------
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]

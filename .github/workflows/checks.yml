@@ -1,0 +1,32 @@
+# The same checks as the local git hooks, on every push and pull request.
+# Local hooks can be skipped with --no-verify; this can't.
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # gitleaks scans the full history
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install backend dependencies
+        run: make sync
+
+      - name: Pre-commit checks (secrets, hygiene, lint, format, types)
+        run: make precommit
+
+      - name: Tests
+        run: make test
