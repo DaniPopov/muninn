@@ -25,11 +25,13 @@ when someone asks "why didn't you just use X?", the answer should be here.
 | [0003](0003-backend-four-layer-architecture.md) | Backend: four layers (api / services / domain / adapters) | Accepted |
 | [0004](0004-frontend-feature-based-structure.md) | Frontend: organize code by feature | Accepted |
 | [0005](0005-monorepo-apps-layout.md) | Monorepo layout: `apps/backend` and `apps/dashboard` | Accepted |
+| [0006](0006-own-agent-harness.md) | Agent harness: build our own, then evolve it | Accepted |
 
 ## Coming next
 
 - How we connect to WhatsApp (official Cloud API vs a self-hosted bridge)
 - Speech-to-text engine for Hebrew and Russian (local Whisper / ivrit.ai vs hosted API)
 - Storage and encryption at rest (SQLite + SQLCipher? Postgres + app-level encryption?)
-- LLM provider and how memories are retrieved (plain search vs embeddings)
+- Default LLM provider, and how it fits the privacy promise
+- How memories are recalled (all in the prompt vs embeddings)
 - Reminder scheduler and timezone handling

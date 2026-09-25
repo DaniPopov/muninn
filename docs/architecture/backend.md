@@ -82,12 +82,16 @@ apps/backend/
     │   ├── transcription/
     │   │   ├── models.py        # Transcript (text, language, confidence)
     │   │   └── ports.py         # Transcriber
-    │   └── agent/
-    │       ├── models.py        # AgentDecision: save / recall / remind / chat
+    │   └── agent/               # ADR 0006: our own harness
+    │       ├── models.py        # Message, ToolCall, ToolResult, ModelResponse (no SDK types)
     │       └── ports.py         # LanguageModel
     │
     ├── services/
     │   ├── exceptions.py        # NotFoundError, ConflictError, UnavailableError, ...
+    │   ├── agent/
+    │   │   ├── harness.py       # the agent loop: model → tools → model, step limit, timeout
+    │   │   ├── tools.py         # tool definitions; each calls a feature service
+    │   │   └── prompts/         # system prompts as files
     │   ├── conversation/
     │   │   └── service.py       # ConversationService: the main flow, see below
     │   ├── memories/
@@ -103,8 +107,8 @@ apps/backend/
     │   │   ├── fake.py          # returns a fixed transcript
     │   │   └── whisper.py       # local faster-whisper / ivrit.ai (ADR pending)
     │   ├── llm/
-    │   │   ├── fake.py
-    │   │   └── <provider>.py    # (ADR pending)
+    │   │   ├── fake.py          # scripted responses for tests
+    │   │   └── openai_compatible.py  # OpenAI, Ollama, vLLM, OpenRouter, ...
     │   ├── storage/
     │   │   ├── memory.py        # in-memory repositories (tests, dev)
     │   │   └── sql.py           # encrypted SQL storage (ADR pending)
@@ -137,10 +141,11 @@ tests/                           # mirrors app/ (apps/backend/tests/): domain/ s
 
 2. services/conversation          ConversationService.handle(message):
                                     a. voice? → Transcriber port → "I lent Guy 200 shekels"
-                                    b. LanguageModel port → AgentDecision.save(
-                                         kind=loan, person="Guy", amount=200 ILS)
-                                    c. MemoryService.save(...)
-                                    d. MessagingChannel port → "Got it."
+                                    b. agent harness → LanguageModel port → the model
+                                       asks for the save_memory tool
+                                    c. the tool calls MemoryService.save(...)
+                                    d. the model writes the reply
+                                    e. MessagingChannel port → "Got it."
 
 3. domain/memories                Memory(...) validates itself: text not empty,
                                   amount positive, etc. Pure Python rules.
