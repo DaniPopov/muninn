@@ -57,3 +57,23 @@ def test_finds_the_repo_root_env_file_without_counting_folders() -> None:
     assert env_file is not None
     assert (env_file.parent / ".env.example").is_file()
     assert (env_file.parent / "apps" / "backend").is_dir()
+
+
+def test_llm_defaults_point_at_openai_with_no_key() -> None:
+    settings = make_settings()
+    assert settings.llm_base_url == "https://api.openai.com/v1"
+    assert settings.llm_model == ""
+    assert settings.llm_api_key is None
+
+
+def test_empty_llm_api_key_means_no_key() -> None:
+    assert make_settings(llm_api_key="  ").llm_api_key is None
+
+
+def test_llm_api_key_never_prints() -> None:
+    settings = make_settings(llm_api_key="sk-test-123")
+
+    assert settings.llm_api_key is not None
+    assert settings.llm_api_key.get_secret_value() == "sk-test-123"
+    assert "sk-test-123" not in repr(settings)
+    assert "sk-test-123" not in str(settings.llm_api_key)

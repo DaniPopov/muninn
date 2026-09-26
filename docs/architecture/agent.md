@@ -1,7 +1,7 @@
 # Agent Architecture
 
 Status: **in progress**. Built: the domain types, the `LanguageModel` port, the harness,
-tools and the fake model. Next: the OpenAI-compatible adapter and a terminal chat script.
+tools, the fake model and the OpenAI-compatible adapter. Next: a terminal chat script.
 Decisions: [ADR 0006](../architecture_decisions/0006-own-agent-harness.md) (our own harness),
 [ADR 0007](../architecture_decisions/0007-llm-providers.md) (OpenAI first, then Claude, then local).
 
@@ -75,6 +75,7 @@ class ToolCall:
     id: str                    # provider's id, echoed back with the result
     name: str
     arguments: dict[str, Any]  # already parsed from JSON by the adapter
+    invalid_arguments: str | None = None  # raw text when the model wrote broken JSON
 
 @dataclass(frozen=True)
 class Message:
@@ -256,8 +257,12 @@ configurable base URL (`LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`).
   Completions is the format Ollama, vLLM, OpenRouter and most other servers copy, so one
   adapter covers all of them ([ADR 0007](../architecture_decisions/0007-llm-providers.md)).
 - It maps our `Message` / `ToolDefinition` to the API's format and the response back to
-  `ModelResponse`, parsing tool-call arguments from JSON. Arguments that aren't valid
-  JSON become an `error:` tool result instead of crashing the turn.
+  `ModelResponse`, parsing tool-call arguments from JSON. Arguments that aren't a valid
+  JSON object are kept in `ToolCall.invalid_arguments`; the registry turns that into an
+  `error:` tool result instead of crashing the turn.
+- No automatic retries (`max_retries=0`) and a 20 s timeout per call: the harness's turn
+  timeout is the budget, and the user is better served by a quick "try again".
+- The key comes from `LLM_API_KEY` as a `SecretStr`. Local servers don't need one.
 - It translates SDK errors: timeouts, rate limits, 5xx and connection errors become
   `LanguageModelUnavailableError`; everything else `LanguageModelError`.
 
@@ -285,7 +290,9 @@ Tests for the harness, all offline:
 - an unavailable model raises `AgentUnavailableError`
 - history goes in, `new_messages` comes out, usage is summed
 
-The OpenAI adapter's mapping is tested against recorded API responses, without a network.
+The OpenAI adapter is tested with the real SDK against a fake HTTP server
+(`httpx.MockTransport`) that returns responses shaped like the real API: request
+mapping, response parsing, broken JSON, and every error status. No network.
 
 ## Trying it before WhatsApp exists
 

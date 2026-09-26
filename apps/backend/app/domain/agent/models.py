@@ -32,6 +32,9 @@ class ToolCall:
     id: str  # the provider's id; we send it back with the result
     name: str
     arguments: Mapping[str, Any]  # already parsed from JSON by the adapter
+    # Models sometimes produce broken JSON. The adapter keeps the raw text here (and
+    # `arguments` empty) so the registry can tell the model, instead of crashing the turn.
+    invalid_arguments: str | None = None
 
 
 @dataclass(frozen=True)

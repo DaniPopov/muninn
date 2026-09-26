@@ -69,3 +69,14 @@ async def test_unexpected_error_is_hidden_from_the_model() -> None:
     assert not outcome.ok
     assert outcome.content == "error: the tool failed"
     assert "hunter2" not in outcome.content
+
+
+async def test_arguments_that_were_not_json_are_an_error_for_the_model() -> None:
+    echo = EchoTool()
+    broken = ToolCall(id="call_1", name="echo", arguments={}, invalid_arguments='{"text": "fl')
+
+    outcome = await ToolRegistry([echo]).execute(broken)
+
+    assert not outcome.ok
+    assert outcome.content == "error: arguments were not a valid JSON object"
+    assert echo.received == []

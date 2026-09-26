@@ -11,7 +11,7 @@ from enum import StrEnum
 from functools import cached_property
 from pathlib import Path
 
-from pydantic import field_validator
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -47,6 +47,18 @@ class Settings(BaseSettings):
 
     app_env: AppEnv = AppEnv.DEV
     app_domain: str = "localhost"
+
+    # LLM (ADR 0007). Any server that speaks the OpenAI chat API.
+    llm_base_url: str = "https://api.openai.com/v1"
+    llm_model: str = ""
+    # SecretStr: prints as '**********', so the key can't leak into logs or errors.
+    llm_api_key: SecretStr | None = None
+
+    @field_validator("llm_api_key", mode="before")
+    @classmethod
+    def _empty_key_is_no_key(cls, value: object) -> object:
+        # `LLM_API_KEY=` in .env means "not set" (local models don't need a key).
+        return None if isinstance(value, str) and not value.strip() else value
 
     @field_validator("app_env", mode="before")
     @classmethod

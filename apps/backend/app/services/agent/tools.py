@@ -73,6 +73,8 @@ class ToolRegistry:
         tool = self._tools.get(call.name)
         if tool is None:
             return ToolOutcome(f"error: no tool named {call.name!r}", ok=False)
+        if call.invalid_arguments is not None:
+            return ToolOutcome("error: arguments were not a valid JSON object", ok=False)
 
         try:
             args = tool.args_model.model_validate(dict(call.arguments))
