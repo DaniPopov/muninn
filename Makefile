@@ -13,6 +13,7 @@ BACKEND      := apps/backend
 .DEFAULT_GOAL := help
 .PHONY: help env \
         dev-up dev-down dev-restart dev-build dev-logs dev-ps \
+        tunnel-up tunnel-down tunnel-logs \
         prod-up prod-down prod-restart prod-build prod-logs prod-ps \
         sync run hooks precommit lint fmt typecheck test coverage audit check \
         backend-shell dashboard-shell config clean
@@ -42,6 +43,19 @@ dev-logs: ## Follow DEV logs (all services)
 
 dev-ps: ## Show DEV containers
 	$(COMPOSE_DEV) ps
+
+# ---- Tunnel (DEV): public HTTPS URL for Twilio webhooks ----------------------
+tunnel-up: ## Start the ngrok tunnel to the backend (needs ngrok.yml + NGROK_AUTHTOKEN)
+	@test -f ngrok.yml || { echo "ngrok.yml missing: cp ngrok.example.yml ngrok.yml"; exit 1; }
+	@grep -qE '^NGROK_AUTHTOKEN=.+' .env 2>/dev/null || { echo "Set NGROK_AUTHTOKEN in .env"; exit 1; }
+	$(COMPOSE_DEV) --profile tunnel up -d ngrok
+	@echo "Inspector: http://localhost:4040"
+
+tunnel-down: ## Stop the ngrok tunnel
+	$(COMPOSE_DEV) --profile tunnel stop ngrok
+
+tunnel-logs: ## Follow the ngrok tunnel logs
+	$(COMPOSE_DEV) --profile tunnel logs -f ngrok
 
 # ---- STAGE / PROD ------------------------------------------------------------
 prod-up: env ## Start STAGE/PROD in the background: app on :80

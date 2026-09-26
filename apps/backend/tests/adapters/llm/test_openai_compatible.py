@@ -293,3 +293,20 @@ def test_create_works_without_a_key_for_local_servers() -> None:
         base_url="http://localhost:11434/v1", model="local-model", api_key=None
     )
     assert model.model_name == "local-model"
+
+
+async def test_reasoning_effort_is_sent_only_when_set() -> None:
+    server = reply_with(completion(text_message("ok")))
+    client = AsyncOpenAI(
+        base_url="https://llm.test/v1",
+        api_key="sk-test",
+        http_client=httpx.AsyncClient(transport=httpx.MockTransport(server.handle)),
+    )
+
+    await OpenAICompatibleLanguageModel(client, "m", reasoning_effort="none").complete(
+        [Message.user("x")], []
+    )
+    await OpenAICompatibleLanguageModel(client, "m").complete([Message.user("x")], [])
+
+    assert server.requests[0]["reasoning_effort"] == "none"
+    assert "reasoning_effort" not in server.requests[1]

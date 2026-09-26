@@ -12,9 +12,20 @@ time. Voice notes in Hebrew and Russian are the most important input. Data is st
 the user's own server. It's also a teaching project: code and docs are written to be
 read by junior developers.
 
-**Status:** early. The backend skeleton and the agent harness exist. No WhatsApp,
-memories, reminders or dashboard code yet. Check `git log` and the roadmap in
-[README.md](README.md) for where things are.
+**Status:** early development (Phase 1 in the [README roadmap](README.md#roadmap)).
+
+| Built and tested | Not built yet |
+|---|---|
+| Backend skeleton: config, `/health`, error mapping, Docker, CI, security checks | Terminal chat script (next) |
+| Agent harness: tool loop, limits, logging (`services/agent/`) | Memories, reminders |
+| OpenAI-compatible adapter (`adapters/llm/`), tested offline and against the real API | WhatsApp (Twilio adapter), voice / speech-to-text |
+| ngrok tunnel for local webhooks (`make tunnel-up`) | Storage (in-memory only), dashboard |
+
+Decisions so far (details in the ADRs): Python + FastAPI backend in four layers, React +
+TypeScript + Tailwind dashboard by feature, `apps/` monorepo, **our own agent harness**
+(no framework), **OpenAI first** (`gpt-6-luna`), then Claude, then local models,
+**WhatsApp through Twilio first**. Open: speech-to-text engine, storage and encryption,
+how memories are recalled. Check `git log` for the latest.
 
 ## Read these first
 
@@ -37,7 +48,7 @@ apps/backend/          Python 3.12 + FastAPI, four layers (backend.md)
     services/          use-cases; services/agent/ is the harness (agent.md)
     adapters/          port implementations (llm/, clock/, ...). Only bootstrap imports these.
     api/               FastAPI routers + schemas; api/v1/ is versioned
-    config.py          Settings (APP_ENV, APP_DOMAIN, LLM_*)
+    config.py          Settings (APP_ENV, APP_DOMAIN, LLM_*); see "Configuration" below
     bootstrap.py       composition root: builds adapters and services
     main.py            create_app() factory
   tests/               mirrors app/
@@ -46,7 +57,8 @@ apps/dashboard/        React + TypeScript + Tailwind, by feature (no code yet)
 docs/                  architecture/ (how it works now), architecture_decisions/ (ADRs), assets/
 scripts/               repo-wide scripts
 Makefile               every command; run `make` to list them
-.env.example           every config key; copy to .env
+.env.example           every config key; copy to .env (gitignored)
+ngrok.example.yml      local tunnel config; copy to ngrok.yml (gitignored)
 ```
 
 ## Commands
@@ -61,7 +73,25 @@ make test         # backend tests only
 make coverage     # tests with a coverage report
 make audit        # dependencies vs known vulnerabilities
 make dev-up       # full stack in Docker (DEV); make dev-down to stop
+make tunnel-up    # ngrok: public HTTPS URL to your local backend, for Twilio webhooks
 ```
+
+## Configuration
+
+Everything comes from environment variables, documented in [.env.example](.env.example).
+One `.env` at the repo root feeds both Docker Compose and the backend.
+
+| Variables | What |
+|---|---|
+| `APP_ENV`, `APP_DOMAIN` | DEV / STAGE / PROD, and the public domain |
+| `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_REASONING_EFFORT` | the model. With `gpt-6-luna` over Chat Completions, `LLM_REASONING_EFFORT=none` is **required** or tool calls are rejected (400) |
+| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER` | WhatsApp through Twilio (not wired yet) |
+| `NGROK_AUTHTOKEN` | DEV tunnel only |
+| `BACKEND_PORT`, `DASHBOARD_PORT`, `DASHBOARD_DEV_PORT` | ports on the host |
+
+Deployment config and secrets live in `.env`. Settings people will change while the app
+runs (model, timezone) are planned to move to the database and the dashboard later;
+API keys stay in `.env`.
 
 ## Rules
 
@@ -84,9 +114,13 @@ make dev-up       # full stack in Docker (DEV); make dev-down to stop
 - Tools are thin: they call a service. Business rules stay in the domain.
 - Prompts are files in `services/agent/prompts/`, not strings in code.
 - Never log what users said (messages, tool arguments, tool results) outside DEV.
+- Tests use `FakeLanguageModel`; the adapter is tested with a fake HTTP server. Real API
+  calls cost money and are only for manual checks.
 
 **Security and privacy**
 - Never commit secrets. Real keys go in `.env` (gitignored). `.env.example` has empty values.
+  `ngrok.yml` is gitignored too (it has a personal domain); `ngrok.example.yml` is the template.
+- Never read or print the values in `.env`. To check config, print whether a value is set.
 - Secrets are `SecretStr` in settings, so they never print.
 - Never put real personal data in tests, fixtures, issues or logs. Use made-up examples.
 

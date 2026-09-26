@@ -1,0 +1,22 @@
+# ngrok tunnel for local development: gives your laptop a public HTTPS URL so Twilio can
+# deliver WhatsApp messages to the backend.
+#
+#   cp ngrok.example.yml ngrok.yml     # ngrok.yml is gitignored; edit your domain there
+#   make tunnel-up                     # starts ngrok in Docker (DEV only)
+#
+# The authtoken is NOT in this file: set NGROK_AUTHTOKEN in .env (ngrok reads it itself),
+# so every secret lives in one gitignored file.
+version: 3
+
+agent:
+  web_addr: 0.0.0.0:4040   # request inspector, published on http://localhost:4040
+  log_level: info
+  log_format: json
+
+tunnels:
+  whatsapp:
+    proto: http
+    # The backend on your machine, whether it runs in Docker (make dev-up) or not (make run).
+    addr: host.docker.internal:8000
+    # Your reserved ngrok domain. Also set APP_DOMAIN in .env to the same value.
+    domain: your-name.ngrok.dev

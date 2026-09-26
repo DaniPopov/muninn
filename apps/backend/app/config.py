@@ -29,6 +29,10 @@ def _find_root_env_file() -> Path | None:
     return None
 
 
+# The values OpenAI-compatible APIs accept for `reasoning_effort`.
+REASONING_EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh", "max")
+
+
 class AppEnv(StrEnum):
     """Where the app is running. See docs/architecture/backend.md#configuration-and-environments."""
 
@@ -53,12 +57,27 @@ class Settings(BaseSettings):
     llm_model: str = ""
     # SecretStr: prints as '**********', so the key can't leak into logs or errors.
     llm_api_key: SecretStr | None = None
+    # Optional. Sent only when set. OpenAI's GPT-6 models need "none" for tool calling
+    # over Chat Completions. Leave empty for servers that don't support it (Ollama, ...).
+    llm_reasoning_effort: str | None = None
 
-    @field_validator("llm_api_key", mode="before")
+    @field_validator("llm_api_key", "llm_reasoning_effort", mode="before")
     @classmethod
-    def _empty_key_is_no_key(cls, value: object) -> object:
+    def _empty_means_not_set(cls, value: object) -> object:
         # `LLM_API_KEY=` in .env means "not set" (local models don't need a key).
         return None if isinstance(value, str) and not value.strip() else value
+
+    @field_validator("llm_reasoning_effort")
+    @classmethod
+    def _known_reasoning_effort(cls, value: str | None) -> str | None:
+        # Fail at startup on a typo, not on the first user message.
+        if value is None:
+            return None
+        effort = value.strip().lower()
+        if effort not in REASONING_EFFORTS:
+            allowed = ", ".join(REASONING_EFFORTS)
+            raise ValueError(f"LLM_REASONING_EFFORT must be one of: {allowed}")
+        return effort
 
     @field_validator("app_env", mode="before")
     @classmethod

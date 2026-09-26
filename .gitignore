@@ -6,6 +6,7 @@
 
 # Secrets and local data
 .env
+ngrok.yml
 .env.*
 !.env.example
 *.db

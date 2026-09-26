@@ -262,6 +262,10 @@ configurable base URL (`LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`).
   `error:` tool result instead of crashing the turn.
 - No automatic retries (`max_retries=0`) and a 20 s timeout per call: the harness's turn
   timeout is the budget, and the user is better served by a quick "try again".
+- `LLM_REASONING_EFFORT` is sent only when set, because many compatible servers don't know
+  the field. OpenAI's GPT-6 models (our default, `gpt-6-luna`) support tool calling over
+  Chat Completions **only with `reasoning_effort=none`**; without it the API returns 400.
+  Verified against the real API.
 - The key comes from `LLM_API_KEY` as a `SecretStr`. Local servers don't need one.
 - It translates SDK errors: timeouts, rate limits, 5xx and connection errors become
   `LanguageModelUnavailableError`; everything else `LanguageModelError`.
@@ -314,5 +318,11 @@ cd apps/backend && uv run python scripts/chat.py
 
 ## Open questions
 
-- Which OpenAI model goes into `LLM_MODEL` (cost against speed).
 - How tools will know **who** the user is, once there's more than one user.
+- The fallback reply is English only; it should follow the user's language.
+
+## Decided
+
+- Default model: `gpt-6-luna` ($0.10 / $0.50 per million input / output tokens, about
+  $0.0004 per turn). `gpt-6-sol` costs 20x more; switch only if Luna is weak in Hebrew or
+  Russian. Changing it is one line in `.env`.

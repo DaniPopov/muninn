@@ -77,3 +77,14 @@ def test_llm_api_key_never_prints() -> None:
     assert settings.llm_api_key.get_secret_value() == "sk-test-123"
     assert "sk-test-123" not in repr(settings)
     assert "sk-test-123" not in str(settings.llm_api_key)
+
+
+def test_reasoning_effort_is_optional_and_normalized() -> None:
+    assert make_settings().llm_reasoning_effort is None
+    assert make_settings(llm_reasoning_effort="").llm_reasoning_effort is None
+    assert make_settings(llm_reasoning_effort=" None ").llm_reasoning_effort == "none"
+
+
+def test_unknown_reasoning_effort_fails_at_startup() -> None:
+    with pytest.raises(ValidationError, match="LLM_REASONING_EFFORT"):
+        make_settings(llm_reasoning_effort="nonee")

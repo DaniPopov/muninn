@@ -30,7 +30,8 @@ when someone asks "why didn't you just use X?", the answer should be here.
 
 ## Coming next
 
-- How we connect to WhatsApp (official Cloud API vs a self-hosted bridge)
+- How we connect to WhatsApp: **decided, Twilio first** behind a `MessagingChannel` port, more
+  adapters later if needed. The ADR is written with the feature (24-hour window, reminder templates).
 - Speech-to-text engine for Hebrew and Russian (local Whisper / ivrit.ai vs hosted API)
 - Storage and encryption at rest (SQLite + SQLCipher? Postgres + app-level encryption?)
 - How memories are recalled (all in the prompt vs embeddings)

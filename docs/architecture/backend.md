@@ -230,8 +230,10 @@ WhatsApp webhook URL, links and CORS. `APP_ENV` says where the app is running:
 | `STAGE` | a test server with a test WhatsApp number | production build, real adapters, `/docs` on |
 | `PROD` | the real server | production build, real adapters, JSON logs, `/docs` off, refuses to start with fake adapters |
 
-New settings get added to `.env.example` with a comment when the feature that needs
-them is built. Secrets never go into the repo or into logs.
+Other settings: `LLM_*` for the model ([agent.md](agent.md)), `TWILIO_*` for WhatsApp,
+`NGROK_AUTHTOKEN` for the DEV tunnel. [.env.example](../../.env.example) documents every
+one. New settings get added there with a comment when the feature that needs them is
+built. Secrets are `SecretStr` in `Settings`, and never go into the repo or into logs.
 
 ## Adding a feature: checklist
 

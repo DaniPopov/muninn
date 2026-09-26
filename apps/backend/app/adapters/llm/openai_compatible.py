@@ -36,11 +36,14 @@ _NO_KEY = "not-needed"
 
 
 class OpenAICompatibleLanguageModel(LanguageModel):
-    def __init__(self, client: AsyncOpenAI, model: str) -> None:
+    def __init__(
+        self, client: AsyncOpenAI, model: str, *, reasoning_effort: str | None = None
+    ) -> None:
         if not model.strip():
             raise ValueError("LLM_MODEL is not set. Put the model name in .env.")
         self._client = client
         self._model = model
+        self._reasoning_effort = reasoning_effort
 
     @classmethod
     def create(
@@ -49,6 +52,7 @@ class OpenAICompatibleLanguageModel(LanguageModel):
         base_url: str,
         model: str,
         api_key: str | None,
+        reasoning_effort: str | None = None,
         timeout_seconds: float = MODEL_CALL_TIMEOUT_SECONDS,
     ) -> OpenAICompatibleLanguageModel:
         client = AsyncOpenAI(
@@ -59,7 +63,7 @@ class OpenAICompatibleLanguageModel(LanguageModel):
             # waiting on WhatsApp is better served by a quick "try again" than a long wait.
             max_retries=0,
         )
-        return cls(client, model)
+        return cls(client, model, reasoning_effort=reasoning_effort)
 
     @property
     def model_name(self) -> str:
@@ -74,6 +78,8 @@ class OpenAICompatibleLanguageModel(LanguageModel):
         }
         if tools:  # the API rejects an empty tool list
             request["tools"] = [_to_api_tool(t) for t in tools]
+        if self._reasoning_effort:  # many compatible servers don't know this field
+            request["reasoning_effort"] = self._reasoning_effort
 
         try:
             completion = await self._client.chat.completions.create(**request)

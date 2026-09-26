@@ -11,9 +11,9 @@ You talk to it like you'd talk to a person: type a message or just send a voice 
 It saves what you tell it, finds it again when you ask, and reminds you at the right time.
 Everything is stored on **your own server**, encrypted.
 
-> **Status: early design phase.** There's no working code yet. We're writing down
-> what we're building and why before we build it. See [Roadmap](#roadmap) and
-> [`docs/architecture_decisions/`](docs/architecture_decisions/).
+> **Status: early development.** The backend skeleton and the AI agent's core (the
+> harness, tools, and the OpenAI adapter) are built and tested. WhatsApp, memories,
+> reminders and voice are next. Not usable yet. See [Roadmap](#roadmap).
 
 ---
 
@@ -95,7 +95,9 @@ React + TypeScript + Tailwind dashboard organized by feature, Docker Compose to 
 - [Agent architecture](docs/architecture/agent.md)
 - [Dashboard architecture](docs/architecture/dashboard.md)
 - [Architecture Decision Records](docs/architecture_decisions/): what we decided and why.
-  Still open: WhatsApp integration, speech-to-text engine, storage and encryption.
+  Decided so far: the stack, four backend layers, our own agent harness, OpenAI first
+  (then Claude, then local models), WhatsApp through Twilio first.
+  Still open: speech-to-text engine, storage and encryption, how memories are recalled.
   If you have an opinion, open an issue.
 
 ## Repository layout
@@ -114,13 +116,19 @@ muninn/
 ├── docker-compose.dev.yml  # DEV override (hot reload)
 ├── Makefile                # make dev-up, make dev-down, ... (run `make` for all)
 ├── AGENTS.md               # how to work in this codebase (contributors and AI assistants)
+├── ngrok.example.yml       # local tunnel for WhatsApp webhooks (copy to ngrok.yml)
 └── .env.example            # copy to .env
 ```
 
 ## Roadmap
 
-- [ ] **Phase 0: Design.** README, stack, backend and dashboard architecture, open ADRs for WhatsApp / STT / storage *(we are here)*
-- [ ] **Phase 1: Text MVP.** Receive WhatsApp text, save memories, answer questions
+- [x] **Phase 0: Design.** README, stack, backend / agent / dashboard architecture, ADRs 0001-0007
+- [ ] **Phase 1: Text MVP** *(we are here)*
+  - [x] Backend skeleton: config, `/health`, error handling, Docker, CI, security checks
+  - [x] Agent harness: tool loop, limits, logging, OpenAI-compatible adapter
+  - [ ] Terminal chat to try the agent
+  - [ ] Memories: save, search, edit, delete
+  - [ ] WhatsApp through Twilio: receive messages, reply
 - [ ] **Phase 2: Voice.** Hebrew and Russian voice notes via speech-to-text
 - [ ] **Phase 3: Reminders.** Natural-language scheduling, timezone-aware delivery
 - [ ] **Phase 4: Security.** Encryption at rest, key management, export and delete-all
@@ -129,21 +137,32 @@ muninn/
 
 ## Getting started
 
-There's no application code yet, so there's nothing to run. The setup will look like this:
+Muninn isn't usable yet, but the backend runs. You need Docker, [uv](https://docs.astral.sh/uv/)
+and `make`.
 
 ```bash
-make env        # creates .env from .env.example, then set APP_ENV=DEV | STAGE | PROD
+make env        # creates .env from .env.example; fill in LLM_API_KEY and the rest
+make sync       # install backend dependencies
+make hooks      # install the git hooks (checks run on every commit)
 
-make dev-up     # DEV: hot reload. Backend on :8000 (/docs), dashboard on :5173
+make run        # backend without Docker, hot reload: http://localhost:8000/docs
+make check      # all checks + tests, the same as CI
+```
+
+With Docker:
+
+```bash
+make dev-up     # DEV: hot reload. Backend on :8000 (/docs), dashboard on :5173 (once it exists)
 make dev-logs   # follow the logs
 make dev-down   # stop
-
 make prod-up    # STAGE / PROD: production build, app on :80
 ```
 
-Run `make` to see every command.
+**Local WhatsApp testing** needs a public HTTPS URL so Twilio can reach your laptop:
+copy `ngrok.example.yml` to `ngrok.yml`, set your domain there and `NGROK_AUTHTOKEN` in
+`.env`, then `make tunnel-up` (inspector on http://localhost:4040).
 
-Star or watch the repo to follow along.
+Run `make` to see every command. Star or watch the repo to follow along.
 
 ## Contributing
 

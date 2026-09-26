@@ -23,5 +23,21 @@ services:
     ports: !override   # replace the base's nginx port, don't add to it
       - "${DASHBOARD_DEV_PORT:-5173}:5173"
 
+  # Public HTTPS tunnel to the backend, so Twilio can reach your laptop.
+  # Off by default: `make tunnel-up` starts it. Needs ngrok.yml and NGROK_AUTHTOKEN in .env.
+  ngrok:
+    image: ngrok/ngrok:3-alpine
+    profiles: ["tunnel"]
+    command: ["start", "--all", "--config", "/etc/ngrok.yml"]
+    environment:
+      # Optional here so `make dev-up` works without ngrok; `make tunnel-up` checks it.
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:-}
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # needed on Linux; Docker Desktop has it already
+    ports:
+      - "127.0.0.1:4040:4040"   # inspector: http://localhost:4040
+
 volumes:
   dashboard-node-modules:
