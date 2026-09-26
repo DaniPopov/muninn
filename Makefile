@@ -5,9 +5,12 @@
 #
 # Which one is STAGE and which is PROD is decided by APP_ENV in .env.
 
+# The dashboard joins the stack automatically once it has a Dockerfile.
+DASHBOARD_PROFILE := $(if $(wildcard apps/dashboard/Dockerfile),--profile dashboard,)
+
 COMPOSE      := docker compose
-COMPOSE_DEV  := $(COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml
-COMPOSE_PROD := $(COMPOSE) -f docker-compose.yml
+COMPOSE_DEV  := $(COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml $(DASHBOARD_PROFILE)
+COMPOSE_PROD := $(COMPOSE) -f docker-compose.yml $(DASHBOARD_PROFILE)
 BACKEND      := apps/backend
 
 .DEFAULT_GOAL := help
@@ -15,7 +18,7 @@ BACKEND      := apps/backend
         dev-up dev-down dev-restart dev-build dev-logs dev-ps \
         tunnel-up tunnel-down tunnel-logs \
         prod-up prod-down prod-restart prod-build prod-logs prod-ps \
-        sync run hooks precommit lint fmt typecheck test coverage audit check \
+        sync chat run hooks precommit lint fmt typecheck test coverage audit check \
         backend-shell dashboard-shell config clean
 
 help: ## Show this help
@@ -26,7 +29,7 @@ env: ## Create .env from .env.example (never overwrites an existing .env)
 	else cp .env.example .env && echo "created .env from .env.example"; fi
 
 # ---- DEV ---------------------------------------------------------------------
-dev-up: env ## Start DEV in the background: backend :8000 (/docs), dashboard :5173
+dev-up: env ## Start DEV in the background: backend :8000 (/docs), dashboard :5173 once it exists
 	$(COMPOSE_DEV) up -d --build
 
 dev-down: ## Stop DEV (data volumes are kept)
@@ -79,6 +82,9 @@ prod-ps: ## Show STAGE/PROD containers
 # ---- Quality checks (run `make check` before pushing) -----------------------
 sync: ## Install backend dependencies (uv)
 	cd $(BACKEND) && uv sync
+
+chat: ## Chat with the agent in the terminal (real model from .env, demo tools)
+	cd $(BACKEND) && uv run python scripts/chat.py
 
 run: ## Run the backend locally without Docker, with hot reload (http://localhost:8000/docs)
 	cd $(BACKEND) && uv run uvicorn app.main:create_app --factory --reload --port $${BACKEND_PORT:-8000}

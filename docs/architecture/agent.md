@@ -1,7 +1,8 @@
 # Agent Architecture
 
 Status: **in progress**. Built: the domain types, the `LanguageModel` port, the harness,
-tools, the fake model and the OpenAI-compatible adapter. Next: a terminal chat script.
+tools, the fake model, the OpenAI-compatible adapter and the terminal chat (`make chat`).
+Next: real tools, starting with memories.
 Decisions: [ADR 0006](../architecture_decisions/0006-own-agent-harness.md) (our own harness),
 [ADR 0007](../architecture_decisions/0007-llm-providers.md) (OpenAI first, then Claude, then local).
 
@@ -305,8 +306,18 @@ tools (for example `get_current_time`). In DEV it prints each step, so you can w
 the loop work:
 
 ```bash
-cd apps/backend && uv run python scripts/chat.py
+make chat                                   # or: cd apps/backend && uv run python scripts/chat.py
+uv run python scripts/chat.py --timezone Europe/Moscow --quiet
 ```
+
+It uses `bootstrap.build_language_model(settings)`, the same factory the app will use.
+Its tools (`get_current_time`, `save_note`, `search_notes`) are demo code that lives only
+in the script, until the real memories feature exists.
+
+First real run (2026-09-26, `gpt-6-luna`): six turns in English, Hebrew and Russian, each
+2 steps (tool call, then reply), 2-4.5 s per turn, about $0.001 for the whole session.
+Replies came back in the user's language, and a question about something never saved got
+"I don't have that saved." instead of a guess.
 
 ## Not in v1
 

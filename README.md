@@ -126,7 +126,7 @@ muninn/
 - [ ] **Phase 1: Text MVP** *(we are here)*
   - [x] Backend skeleton: config, `/health`, error handling, Docker, CI, security checks
   - [x] Agent harness: tool loop, limits, logging, OpenAI-compatible adapter
-  - [ ] Terminal chat to try the agent
+  - [x] Terminal chat to try the agent (`make chat`)
   - [ ] Memories: save, search, edit, delete
   - [ ] WhatsApp through Twilio: receive messages, reply
 - [ ] **Phase 2: Voice.** Hebrew and Russian voice notes via speech-to-text
@@ -145,6 +145,7 @@ make env        # creates .env from .env.example; fill in LLM_API_KEY and the re
 make sync       # install backend dependencies
 make hooks      # install the git hooks (checks run on every commit)
 
+make chat       # talk to the agent in the terminal (needs LLM_MODEL and LLM_API_KEY in .env)
 make run        # backend without Docker, hot reload: http://localhost:8000/docs
 make check      # all checks + tests, the same as CI
 ```

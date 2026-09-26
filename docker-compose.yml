@@ -19,7 +19,11 @@ services:
       - muninn-data:/app/data   # memories, reminders, models: survives restarts
     restart: unless-stopped
 
+  # Behind a profile until apps/dashboard has code: the Makefile turns the profile on
+  # automatically once apps/dashboard/Dockerfile exists. Without make, add
+  # `--profile dashboard` yourself.
   dashboard:
+    profiles: ["dashboard"]
     build:
       context: ./apps/dashboard
     ports:

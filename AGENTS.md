@@ -16,10 +16,11 @@ read by junior developers.
 
 | Built and tested | Not built yet |
 |---|---|
-| Backend skeleton: config, `/health`, error mapping, Docker, CI, security checks | Terminal chat script (next) |
-| Agent harness: tool loop, limits, logging (`services/agent/`) | Memories, reminders |
+| Backend skeleton: config, `/health`, error mapping, Docker, CI, security checks | Memories (next) |
+| Agent harness: tool loop, limits, logging (`services/agent/`) | Reminders |
 | OpenAI-compatible adapter (`adapters/llm/`), tested offline and against the real API | WhatsApp (Twilio adapter), voice / speech-to-text |
 | ngrok tunnel for local webhooks (`make tunnel-up`) | Storage (in-memory only), dashboard |
+| Terminal chat with demo tools (`make chat`) | |
 
 Decisions so far (details in the ADRs): Python + FastAPI backend in four layers, React +
 TypeScript + Tailwind dashboard by feature, `apps/` monorepo, **our own agent harness**
@@ -68,6 +69,7 @@ make env          # create .env from .env.example
 make sync         # install backend dependencies (uv)
 make hooks        # install git hooks (once per clone)
 make run          # backend locally with hot reload: http://localhost:8000/docs
+make chat         # talk to the agent in the terminal (real model, demo tools)
 make check        # everything CI runs: pre-commit checks + tests. Green before every commit.
 make test         # backend tests only
 make coverage     # tests with a coverage report
