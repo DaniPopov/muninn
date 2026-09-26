@@ -12,6 +12,11 @@ most valuable contributions are ideas, feedback and research, not code.
 - **Report bugs or suggest features** using the issue templates.
 - **Write code** once Phase 1 starts. Look for issues labeled `good first issue`.
 
+## Start here
+
+Read [AGENTS.md](AGENTS.md): the layout, the commands and the rules of this codebase in
+one page. AI coding assistants read the same file (`CLAUDE.md` points to it).
+
 ## Workflow
 
 1. **Open an issue first** for anything bigger than a typo, so we can agree on the

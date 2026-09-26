@@ -1,6 +1,7 @@
 # Agent Architecture
 
-Status: **design**. There's no code yet; this document is the plan the code will follow.
+Status: **in progress**. Built: the domain types, the `LanguageModel` port, the harness,
+tools and the fake model. Next: the OpenAI-compatible adapter and a terminal chat script.
 Decisions: [ADR 0006](../architecture_decisions/0006-own-agent-harness.md) (our own harness),
 [ADR 0007](../architecture_decisions/0007-llm-providers.md) (OpenAI first, then Claude, then local).
 
@@ -41,6 +42,7 @@ domain/agent/                 pure Python, no SDK imports
 
 services/agent/
 ├── harness.py                AgentHarness: runs one turn
+├── prompt.py                 SystemPrompt: loads a prompt file, fills {now} and {timezone}
 ├── tools.py                  Tool base class + ToolRegistry
 ├── exceptions.py             AgentUnavailableError
 └── prompts/

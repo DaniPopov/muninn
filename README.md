@@ -113,6 +113,7 @@ muninn/
 ├── docker-compose.yml      # STAGE / PROD
 ├── docker-compose.dev.yml  # DEV override (hot reload)
 ├── Makefile                # make dev-up, make dev-down, ... (run `make` for all)
+├── AGENTS.md               # how to work in this codebase (contributors and AI assistants)
 └── .env.example            # copy to .env
 ```
 
